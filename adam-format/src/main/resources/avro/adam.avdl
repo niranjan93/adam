@@ -151,11 +151,22 @@ record ADAMContig {
   union { null, string } referenceURL = null;
 }
 
+enum VariantType {
+    SNP,
+    MNP,
+    Insertion,
+    Deletion,
+    Complex,
+    SV
+}
+
 record ADAMVariant {
   union { null, ADAMContig } contig = null;
   union { null, long }       position = null;
   string                     referenceAllele;
   string                     variantAllele;
+  // enum to describe type of variant called
+  union { null, VariantType } variantType = null;
 }
 
 enum ADAMGenotypeAllele {
@@ -163,6 +174,13 @@ enum ADAMGenotypeAllele {
   Alt,   // Genotype is the alternate allele
   NoCall // Genotype could not be called (e.g., reads did not provide
 	 // enough information or had low quality)
+}
+
+enum ADAMGenotypeType {
+  HOM_REF,
+  HET,
+  HOM_ALT,
+  NO_CALL
 }
 
 // This record represents all stats that, inside a VCF, are stored outside of the
@@ -227,6 +245,12 @@ record ADAMGenotype {
   // Phred-scaled. Always length 3 since we are not multiallelic.
   array<int>              genotypeLikelihoods = null; 
 
+  // Allele dosage
+  union { null, float }    expectedAlleleDosage = null;
+
+  // number of reads mapped at site on forward strand
+  union { null, int } readsMappedForwardStrand = null;
+
   // In the ADAM world we split multiallelic VCF lines into multiple
   // single-alternate records.  This bit is set if that happened for this
   // record.
@@ -240,9 +264,52 @@ record ADAMGenotype {
   union { null, int }     phaseQuality = null;
 }
 
+record VariantEffect
+{
+  union { null, string} hgvs = null;
+  union { null, string } referenceAminoAcid = null;
+  union { null, string } alternateAminoAcid = null;
+  union {null, string} geneId = null;
+  union {null, string} transcriptId = null;
+}
+
 record ADAMDatabaseVariantAnnotation {
   union { null, ADAMVariant } variant;
-  union { null, int } dbsnpId = null;
+
+  union { null, int } dbSnpId = null;
+
+  //domain information
+  union {null, string} geneSymbol = null;
+
+  //clinical fields
+  union {null, string} omimId  = null;
+  union {null, string} cosmicId = null;
+  union {null, string} clinvarId  = null;
+  union {null, string} clinicalSignificance  = null;
+
+  //conservation
+  union { null, string } gerpNr  = null;
+  union { null, string } gerpRs  = null;
+  union { null, float } phylop  = null;
+  union { null, string } ancestralAllele  = null;
+
+  //population statistics
+  union {null, int} thousandGenomesAlleleCount = null;
+  union {null, float} thousandGenomesAlleleFrequency = null;
+
+  //effect
+  //TODO(arahuja): Parse into array
+  //array<VariantEffect> effects = null;
+
+  //predicted effects
+  union { null, float } siftScore = null;
+  union { null, float } siftScoreConverted = null;
+  union { null, string } siftPred = null;
+
+  union { null, float } mutationTasterScore = null;
+  union { null, float } mutationTasterScoreConverted = null;
+  union { null, string } mutationTasterPred = null;
+
 }
 
 }

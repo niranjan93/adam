@@ -4,6 +4,20 @@ Trunk (not yet released)
 
   NEW FEATURES
 
+  OPTIMIZATIONS
+
+  IMPROVEMENTS
+
+  * Upgraded Hadoop-BAM to 0.6.2-SNAPSHOT release. This pulls in Picard/Samtools 1.107. This feature was introduced
+    in PR#177, and is a non-breaking change.
+
+  BUG FIXES
+
+
+ADAM 0.7.0
+
+  NEW FEATURES
+
   * Added ability to load and merge multiple ADAM files into a single RDD.
 
   * Pairwise, quantitative ADAM file comparisons: the CompareAdam command has been extended to calculate

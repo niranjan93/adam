@@ -4,7 +4,7 @@
     <parent>
         <groupId>edu.berkeley.cs.amplab.adam</groupId>
         <artifactId>adam-parent</artifactId>
-        <version>0.6.1-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>adam-core</artifactId>
@@ -46,7 +46,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -58,9 +57,12 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.1.9</version>
                 <executions>
-                    <execution> <goals> <goal>revision</goal> </goals> </execution>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <verbose>true</verbose>
@@ -79,6 +81,10 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>

@@ -16,8 +16,8 @@
 
 package edu.berkeley.cs.amplab.adam.rdd.variation
 
-import edu.berkeley.cs.amplab.adam.avro.ADAMGenotype
-import edu.berkeley.cs.amplab.adam.converters.VariantContextConverter
+import edu.berkeley.cs.amplab.adam.avro.{ADAMDatabaseVariantAnnotation, ADAMGenotype}
+import edu.berkeley.cs.amplab.adam.converters.{VariantAnnotationConverter, VariantContextConverter}
 import edu.berkeley.cs.amplab.adam.models.{ADAMVariantContext, SequenceDictionary}
 import edu.berkeley.cs.amplab.adam.rdd.variation.ADAMVariationContext._
 import fi.tkk.ics.hadoop.bam._
@@ -41,7 +41,7 @@ private object ADAMVCFOutputFormat {
 
   def setHeader(samples: Seq[String]) : VCFHeader = {
     header = Some(new VCFHeader(
-      (VariantContextConverter.infoHeaderLines ++ VariantContextConverter.formatHeaderLines).toSet : Set[VCFHeaderLine],
+      (VariantAnnotationConverter.infoHeaderLines ++ VariantAnnotationConverter.formatHeaderLines).toSet : Set[VCFHeaderLine],
       samples
     ))
     header.get
@@ -70,7 +70,20 @@ class ADAMVariationContext(sc: SparkContext) extends Serializable with Logging {
   * @param filePath: input VCF file to read
   * @return RDD of variants
   */
-  def adamVCFLoad(filePath: String): RDD[ADAMVariantContext] = {
+  def adamVCFLoad(filePath: String, extractExternalAnnotations : Boolean = false): RDD[ADAMVariantContext] = {
+    log.info("Reading VCF file from %s".format(filePath))
+    val job = new Job(sc.hadoopConfiguration)
+    val vcc = new VariantContextConverter
+    val records = sc.newAPIHadoopFile(
+      filePath,
+      classOf[VCFInputFormat], classOf[LongWritable], classOf[VariantContextWritable],
+      ContextUtil.getConfiguration(job)
+    )
+    log.info("Converted %d records".format(records.count()))
+    records.flatMap(p => vcc.convert(p._2.get, extractExternalAnnotations))
+  }
+
+  def adamVCFAnnotationLoad(filePath: String): RDD[ADAMDatabaseVariantAnnotation] = {
     log.info("Reading VCF file from %s".format(filePath))
     val job = Job.getInstance(sc.hadoopConfiguration)
     val vcc = new VariantContextConverter
@@ -80,7 +93,7 @@ class ADAMVariationContext(sc: SparkContext) extends Serializable with Logging {
       ContextUtil.getConfiguration(job)
     )
     log.info("Converted %d records".format(records.count()))
-    records.flatMap(p => vcc.convert(p._2.get))
+    records.map(p => vcc.convertToAnnotation(p._2.get))
   }
 
   def adamVCFSave(filePath: String, variants: RDD[ADAMVariantContext], dict: Option[SequenceDictionary] = None) = {

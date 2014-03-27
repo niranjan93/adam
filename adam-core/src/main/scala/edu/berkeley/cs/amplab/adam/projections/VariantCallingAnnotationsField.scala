@@ -14,8 +14,31 @@
  * limitations under the License.
  */
 
-package edu.berkeley.cs.amplab.adam.rich;
+package edu.berkeley.cs.amplab.adam.projections
 
-public enum GenotypeType {
-    HOM_REF, HET, HOM_ALT, NO_CALL
+import edu.berkeley.cs.amplab.adam.avro.VariantCallingAnnotations
+
+class VariantCallingAnnotationsField  extends FieldEnumeration(VariantCallingAnnotations.SCHEMA$) {
+
+  val  readDepth,
+  downsampled,
+  baseQRankSum,
+  clippingRankSum,
+  haplotypeScore,
+  inbreedingCoefficient,
+  alleleCountMLE,
+  alleleFrequencyMLE,
+  rmsMapQ,
+  mapq0Reads,
+  mqRankSum,
+  usedForNegativeTrainingSet,
+  usedForPositiveTrainingSet,
+  variantQualityByDepth,
+  readPositionRankSum,
+  vqslod,
+  culprit,
+  variantCallErrorProbability,
+  variantIsPassing,
+  variantFilters
+  = SchemaValue
 }
