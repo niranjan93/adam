@@ -254,4 +254,19 @@ class RealignIndelsSuite extends SparkFunSuite {
     // this should be a NOP
     assert(RealignIndels(reads).count === 4)
   }
+
+  sparkTest("test OP and OC tags") {
+    artificial_realigned_reads.collect().foreach(realn => {
+      val readName = realn.getReadName()
+      val op = realn.getOldPosition()
+      val oc = realn.getOldCigar()
+      if (op != null && op > 0) {
+        val s = artificial_reads.collect().filter(x => (x.getReadName() == readName))
+        assert(oc != null)
+        assert(s.filter(x => (x.getStart() == op)).length > 0)
+        assert(s.filter(x => (x.getCigar() == oc)).length > 0)
+      }
+    })
+  }
+
 }
