@@ -260,13 +260,12 @@ class RealignIndelsSuite extends SparkFunSuite {
       val readName = realn.getReadName()
       val op = realn.getOldPosition()
       val oc = realn.getOldCigar()
-      if (op != null && op > 0) {
+
+      Option(op).filter(_ >= 0).foreach(oPos => {
         val s = artificial_reads.collect().filter(x => (x.getReadName() == readName))
-        assert(oc != null)
-        assert(s.filter(x => (x.getStart() == op)).length > 0)
+        assert(s.filter(x => (x.getStart() == oPos)).length > 0)
         assert(s.filter(x => (x.getCigar() == oc)).length > 0)
-      }
+      })
     })
   }
-
 }
